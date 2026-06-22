@@ -1,8 +1,39 @@
 # 🍜 Case Study #1 - Danny's Diner 
 
-This repository contains the solution for the first case study of **Danny Ma's 8-Week SQL Challenge**. 
+This repository contains my SQL solutions for the first case study of **Danny Ma's 8-Week SQL Challenge**. 
 
-Detailed case study information can be found on the [official website](https://8weeksqlchallenge.com/case-study-1/).
+I analyzed a restaurant's sales data to find customer behavior patterns, spending habits, and loyalty program impacts.
+
+---
+
+## 📈 Key Insights & Business Takeaways
+
+* **Two Kinds of Loyalty:** 
+  * **Customer B** visited the diner 6 days (the most visits/loyalty in frequency).
+  * **Customer A** spent the most money ($76 vs $74).
+  * *Insight:* One visits often, one spends big. SQL helps us isolate these different customer segments which a simple spreadsheet might miss.
+* **Crowd Favorite:** **Ramen** is the most purchased item on the menu (ordered 8 times 🍜).
+* **Loyalty Program Impact:** 
+  * The loyalty program works — members order significantly more after joining.
+  * The first-week 2x bonus points multiplier boosted Customer A's points total by **48%**.
+  * **Sushi** underperforms despite its permanent 2x points multiplier — suggesting it needs targeted promotional campaigns.
+
+---
+
+## 📸 Solution Gallery / Carousel
+Here are the screenshots of the queries executed and their results. You can find them in the `/images` folder:
+
+| Query 1 & 2 | Query 3 & 4 |
+| :---: | :---: |
+| ![Danny's Diner Q1 & Q2](images/danny_s1.png) | ![Danny's Diner Q3 & Q4](images/danny_s2.png) |
+
+| Query 5 & 6 | Query 7 & 8 |
+| :---: | :---: |
+| ![Danny's Diner Q5 & Q6](images/danny_s3.png) | ![Danny's Diner Q7 & Q8](images/danny_s4.png) |
+
+| Query 9 & 10 |
+| :---: |
+| ![Danny's Diner Q9 & Q10](images/danny_s5.png) |
 
 ---
 
@@ -10,19 +41,16 @@ Detailed case study information can be found on the [official website](https://8
 - [Business Task](#-business-task)
 - [Entity Relationship Diagram](#-entity-relationship-diagram)
 - [Database Schema](#-database-schema)
-- [Solutions](#-solutions)
-- [Key Insights & Recommendations](#-key-insights--recommendations)
+- [SQL Solutions](#-sql-solutions)
 
 ---
 
 ## 🎯 Business Task
-Danny wants to use the data to answer a few simple questions about his customers, especially about their visiting patterns, how much money they’ve spent, and which menu items are their favorite. 
-
-Having this deeper connection with his customers will help him deliver a better and more personalized experience for his loyal customers. He plans on using these insights to help him decide whether he should expand the existing customer loyalty program.
+Danny wants to use the data to answer questions about his customers' visiting patterns, spending habits, and favorite menu items. This enables him to deliver a more personalized experience and decide whether to expand the loyalty program.
 
 ---
 
-## 🗺️ Entity Relationship Diagram
+## 🗺️ ER Diagram
 
 ```mermaid
 erDiagram
@@ -46,7 +74,7 @@ erDiagram
 
 ---
 
-## 📂 Solutions
+## 📂 SQL Solutions
 
 ### 1. What is the total amount each customer spent at the restaurant?
 ```sql
@@ -55,13 +83,6 @@ FROM sales
 INNER JOIN menu ON sales.product_id = menu.product_id 
 GROUP BY customer_id;
 ```
-| customer_id | spent |
-|-------------|-------|
-| A           | 76    |
-| B           | 74    |
-| C           | 36    |
-
----
 
 ### 2. How many days has each customer visited the restaurant?
 ```sql
@@ -69,13 +90,6 @@ SELECT customer_id, COUNT(DISTINCT(order_date)) AS visits
 FROM sales 
 GROUP BY customer_id;
 ```
-| customer_id | visits |
-|-------------|--------|
-| A           | 4      |
-| B           | 6      |
-| C           | 2      |
-
----
 
 ### 3. What was the first item from the menu purchased by each customer?
 ```sql
@@ -91,14 +105,6 @@ SELECT customer_id, product_name
 FROM cte 
 WHERE rank_num = 1;
 ```
-| customer_id | product_name |
-|-------------|--------------|
-| A           | sushi        |
-| A           | curry        |
-| B           | curry        |
-| C           | ramen        |
-
----
 
 ### 4. What is the most purchased item on the menu and how many times was it purchased by all customers?
 ```sql
@@ -115,11 +121,6 @@ SELECT product_name, purchase_count
 FROM cte 
 WHERE rank_num = 1;
 ```
-| product_name | purchase_count |
-|-------------|----------------|
-| ramen       | 8              |
-
----
 
 ### 5. Which item was the most popular for each customer?
 ```sql
@@ -138,15 +139,6 @@ FROM cte
 WHERE rank_num = 1
 ORDER BY customer_id;
 ```
-| customer_id | product_name | purchase_count |
-|-------------|--------------|----------------|
-| A           | ramen        | 3              |
-| B           | curry        | 2              |
-| B           | sushi        | 2              |
-| B           | ramen        | 2              |
-| C           | ramen        | 2              |
-
----
 
 ### 6. Which item was purchased first by the customer after they became a member?
 ```sql
@@ -165,12 +157,6 @@ SELECT customer_id, product_name, order_date
 FROM cte 
 WHERE rank_num = 1;
 ```
-| customer_id | product_name | order_date |
-|-------------|--------------|------------|
-| A           | curry        | 2021-01-07 |
-| B           | sushi        | 2021-01-11 |
-
----
 
 ### 7. Which item was purchased just before the customer became a member?
 ```sql
@@ -188,13 +174,6 @@ FROM (
 ) AS sub
 WHERE rank_num = 1;
 ```
-| customer_id | product_name | order_date |
-|-------------|--------------|------------|
-| A           | sushi        | 2021-01-01 |
-| A           | curry        | 2021-01-01 |
-| B           | sushi        | 2021-01-11 |
-
----
 
 ### 8. What is the total items and amount spent for each member before they became a member?
 ```sql
@@ -208,12 +187,6 @@ LEFT JOIN members mb ON s.customer_id = mb.customer_id
 WHERE s.order_date < mb.join_date OR mb.join_date IS NULL
 GROUP BY s.customer_id;
 ```
-| customer_id | total_items | amount_spent |
-|-------------|-------------|--------------|
-| A           | 2           | 25           |
-| B           | 3           | 40           |
-
----
 
 ### 9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
 ```sql
@@ -224,13 +197,6 @@ FROM sales
 INNER JOIN menu ON sales.product_id = menu.product_id 
 GROUP BY customer_id;
 ```
-| customer_id | points |
-|-------------|--------|
-| A           | 860    |
-| B           | 940    |
-| C           | 360    |
-
----
 
 ### 10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
 ```sql
@@ -246,14 +212,3 @@ LEFT JOIN members mb ON s.customer_id = mb.customer_id
 WHERE s.order_date <= '2021-01-31'
 GROUP BY customer_id;
 ```
-| customer_id | points |
-|-------------|--------|
-| A           | 1370   |
-| B           | 820    |
-
----
-
-## 📈 Key Insights & Recommendations
-* **Ramen** is the undisputed crowd favorite, with 8 total orders. It should remain the core focus of menu advertising.
-* **Customer A** is the highest spender ($76), closely followed by **Customer B** ($74).
-* The **first week membership bonus** works well; customer A accumulated 1,370 points rapidly within January due to first-week visits.
